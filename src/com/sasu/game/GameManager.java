@@ -1,81 +1,88 @@
 package com.sasu.game;
 
-import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import com.sasu.engine.AbstractGame;
 import com.sasu.engine.GameContainer;
 import com.sasu.engine.Renderer;
-import com.sasu.engine.audio.SoundClip;
 import com.sasu.engine.gfx.Image;
-import com.sasu.engine.gfx.ImageTile;
 
-public class GameManager extends AbstractGame
-{
-	public int multi = 5;
-	
-	private ImageTile image;
-	private ImageTile image2;
-	private ImageTile image3;
-	private SoundClip clip;
+public class GameManager extends AbstractGame {
+	public static final int tileSize = 16; // Size of the game tiles :)
 
-	public GameManager()
-	{
-		image = new ImageTile("/test.png", 16, 16);
-		image2 = new ImageTile("/space.png", 32, 32);
-		image3 = new ImageTile("/spaceT.png", 64, 64);
-		image3.setAlpha(true);
-		
+	private boolean[] collision;
+	private int levelW, levelH;
+	private ArrayList<GameObject> objects = new ArrayList<GameObject>();
+
+	public GameManager() {
+		objects.add(new Player(25, 10));
+		loadLevel("/map.png");
 	}
-	
+
 	@Override
-	public void update(GameContainer gc, float dt) 
-	{
-		if(gc.getInput().isKeyDown(KeyEvent.VK_A))
-		{
-			clip = new SoundClip("/Audio/test.wav");
-			clip.setVolume(-20f);
-			
-			System.out.println("A trycktes ned!");
-			clip.play();
-		}
-		
-		if(gc.getInput().isKeyDown(KeyEvent.VK_S))
-		{
-			clip = new SoundClip("/Audio/test2.wav");
-			clip.setVolume(-20f);
-			
-			System.out.println("S trycktes ned!");
-			clip.play(); 
-		}
-		
-		
+	public void init(GameContainer gc) {
+		gc.getRenderer().setAmbientColor(-1);
+	}
 
-		
-		temp += dt * multi;
-		
-		if(temp >  4)
-		{
-			temp = 0;
+	@Override
+	public void update(GameContainer gc, float dt) {
+		for (int i = 0; i < objects.size(); i++) {
+			objects.get(i).update(gc, this, dt);
+			if (objects.get(i).isDead()) {
+				objects.remove(i);
+				i--;
+			}
 		}
 	}
-	
+
 	float temp = 0;
 
 	@Override
-	public void renderer(GameContainer gc, Renderer r)
-	{
-		r.drawImage(image2, 10, 10);
-		
-		//r.drawImage(image3, gc.getInput().getMouseX(), gc.getInput().getMouseY());
-		r.drawImageTile(image, gc.getInput().getMouseX() - 8, gc.getInput().getMouseY() - 16, (int)temp, 0);
-		
-		
+	public void renderer(GameContainer gc, Renderer r) {
+		for (int y = 0; y < levelH; y++) {
+			for (int x = 0; x < levelW; x++) {
+				if (collision[x + y * levelW]) {
+					r.drawFillRect(x * tileSize, y * tileSize, tileSize, tileSize, 0xff000000);
+				} else {
+					r.drawFillRect(x * tileSize, y * tileSize, tileSize, tileSize, 0xfff9f9f9);
+				}
+			}
+		}
+
+		for (GameObject obj : objects) {
+			obj.render(gc, r);
+		}
 	}
-	
-	public static void main(String args[])
-	{
+
+	public void loadLevel(String path) {
+		Image levelImage = new Image(path);
+
+		levelW = levelImage.getW();
+		levelH = levelImage.getH();
+		collision = new boolean[levelW * levelH];
+
+		for (int y = 0; y < levelH; y++) {
+			for (int x = 0; x < levelW; x++) {
+				if (levelImage.getP()[x + y * levelImage.getW()] == 0xff000000) {
+					collision[x + y * levelImage.getW()] = true;
+				} else {
+					collision[x + y * levelImage.getW()] = false;
+				}
+			}
+		}
+	}
+
+	public boolean getCollision(int x, int y) {
+		if (x < 0 || x >= levelW || y < 0 || y >= levelH) {
+			return true;
+		}
+		return collision[x + y * levelW];
+	}
+
+	public static void main(String args[]) {
 		GameContainer gc = new GameContainer(new GameManager());
 		gc.start();
+
 	}
 
 }

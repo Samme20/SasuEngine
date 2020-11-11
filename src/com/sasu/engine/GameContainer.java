@@ -13,9 +13,9 @@ public class GameContainer implements Runnable
 	private AbstractGame game;
 	
 	private boolean running = false;
-	private final double UPDATE_CAP = 1.0/144;
-	private int width = 250, height = 250;
-	private float scale = 4f;
+	private final double UPDATE_CAP = 1.0/244;
+	private int width = 960, height = 540;
+	private float scale = 2f;
 	private String title = "Sasu GameEngine";
 	
 	public GameContainer(AbstractGame game)
@@ -52,6 +52,8 @@ public class GameContainer implements Runnable
 		int frames = 0;
 		int fps = 0;
 				
+		game.init(this);
+		
 		while(running)
 		{
 			render = false;
@@ -86,7 +88,7 @@ public class GameContainer implements Runnable
 				renderer.clear();
 				game.renderer(this, renderer);
 				renderer.process();
-				renderer.drawText("FPS:" + fps, 0, 240, 0xff00ffff);
+				renderer.drawText("FPS:" + fps, 2, 2, 0xff00ffff);
 				window.update();
 				frames++;
 			}
@@ -159,5 +161,9 @@ public class GameContainer implements Runnable
 	public Input getInput() 
 	{
 		return input;
+	}
+
+	public Renderer getRenderer() {
+		return renderer;
 	}
 }

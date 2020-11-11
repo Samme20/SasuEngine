@@ -2,7 +2,7 @@ package com.sasu.engine.gfx;
 
 public class Font 
 {
-	public static final Font STANDARD = new Font("/Fonts/font.png");
+	public static final Font STANDARD = new Font("/Fonts/serif.png");
 	
 	
 	private Image fontImage;
@@ -13,8 +13,8 @@ public class Font
 	{
 		fontImage = new Image(path);
 		
-		offsets = new int[59];
-		widths = new int[59];
+		offsets = new int[256];
+		widths = new int[256];
 		
 		int unicode = 0;
 		
