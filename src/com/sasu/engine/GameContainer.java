@@ -14,8 +14,8 @@ public class GameContainer implements Runnable
 	
 	private boolean running = false;
 	private final double UPDATE_CAP = 1.0/244;
-	private int width = 960, height = 540;
-	private float scale = 2f;
+	private int width = 480, height = 270;
+	private float scale = 4f;
 	private String title = "Sasu GameEngine";
 	
 	public GameContainer(AbstractGame game)

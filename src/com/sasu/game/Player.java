@@ -11,12 +11,21 @@ public class Player extends GameObject
 	private int tileX, tileY;
 	private float offX, offY;
 	
-	private float speed = 300;
+	private float speed = 150;
 	private float fallSpeed = 10;
-	private float jump = -3;
+	private float jump = -1.5f;
 	private boolean groundHit = false;
 	
-	private ImageTile mario_idle;
+	private float animSpeed = 6;
+	
+	private boolean still;
+	
+	private boolean right;
+	private boolean left;
+	private boolean right2;
+	private boolean left2;
+	
+	private ImageTile mario;
 	float temp = 0;
 	
 	private float fallDistance = 0;
@@ -32,21 +41,32 @@ public class Player extends GameObject
 		this.posY = posY * GameManager.tileSize;
 		this.width = 16;
 		this.height = 16;
+		mario = new ImageTile("/mario_idle_right.png", 16, 16);
 	}
 
+	
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt)
 	{
 		// Beginning of Left and Right
-		mario_idle = new ImageTile("/mario_idle.png", 16, 16);
-		
-		temp += dt * 3;
+
+		temp += dt * animSpeed;
 		if(temp > 2) temp = 0;
 		
 		
-		// AAAAAAAAAAAAAAAAA
+		// AAAAAAAAAAAAAAAAA LEFT
 		if(gc.getInput().isKey(KeyEvent.VK_A))
 		{
+			still = false;
+			if(!left)
+			{
+				mario = new ImageTile("/mario_walk_left.png", 16, 16);
+				right = false;
+				left = true;
+				left2 = true;
+				right2 = false;
+				animSpeed = 9;
+			}
 			if(gm.getCollision(tileX - 1, tileY) || gm.getCollision(tileX - 1, tileY + (int)Math.signum((int)offY)))
 			{
 				if(offX > 0)
@@ -68,10 +88,25 @@ public class Player extends GameObject
 			}
 			
 		}
-		
-		// DDDDDDDDDDDDDDDD
+		else
+		{
+			left = false;
+		}
+
+						
+		// DDDDDDDDDDDDDDDD RIGHT
 		if(gc.getInput().isKey(KeyEvent.VK_D))
 		{
+			still = false;
+			if(!right)
+			{
+				mario = new ImageTile("/mario_walk_right.png", 16, 16);
+				left = false;
+				right = true;
+				right2 = true;
+				left2 = false;
+				animSpeed = 9;
+			}
 			if(gm.getCollision(tileX + 1, tileY) || gm.getCollision(tileX + 1, tileY + (int)Math.signum((int)offY)))
 			{
 				if(offX < 0)
@@ -92,6 +127,37 @@ public class Player extends GameObject
 				offX += dt *speed;
 			}
 		}
+		else
+		{
+			right = false;
+		}
+		
+		
+		if(!gc.getInput().isKey(KeyEvent.VK_D) && !gc.getInput().isKey(KeyEvent.VK_A))
+		{
+			//NOTHING
+		}
+		
+		//Checks is no input is present and sets still to true	
+		if(!right && !left)
+		{
+			if(!still)
+			{
+				if(right2)
+				{
+					mario = new ImageTile("/mario_idle_right.png", 16, 16);
+				}
+				if(left2)
+				{
+					mario = new ImageTile("/mario_idle_left.png", 16, 16);
+				}
+				still = true;
+				animSpeed = 4;
+			}
+			
+		}
+		
+		
 		
 		// End of Left and Right
 		
@@ -167,7 +233,7 @@ public class Player extends GameObject
 	public void render(GameContainer gc, Renderer r) 
 	{
 		//r.drawFillRect((int)posX, (int)posY, width, height, 0xffff0000);
-		r.drawImageTile(mario_idle, (int)posX, (int)posY, (int)temp, 0);
+		r.drawImageTile(mario, (int)posX, (int)posY, (int)temp, 0);
 	}
 
 }
