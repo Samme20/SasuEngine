@@ -13,10 +13,13 @@ public class GameManager extends AbstractGame {
 	private boolean[] collision;
 	private int levelW, levelH;
 	private ArrayList<GameObject> objects = new ArrayList<GameObject>();
+	
+	private Camera camera;
 
 	public GameManager() {
 		objects.add(new Player(25, 10));
 		loadLevel("/map.png");
+		camera = new Camera("player");
 	}
 
 	@Override
@@ -33,12 +36,15 @@ public class GameManager extends AbstractGame {
 				i--;
 			}
 		}
+		camera.update(gc, this, dt);
 	}
-
 	float temp = 0;
 
 	@Override
-	public void renderer(GameContainer gc, Renderer r) {
+	public void renderer(GameContainer gc, Renderer r) 
+	{
+		camera.render(r);
+		
 		for (int y = 0; y < levelH; y++) {
 			for (int x = 0; x < levelW; x++) {
 				if (collision[x + y * levelW]) {
@@ -71,12 +77,29 @@ public class GameManager extends AbstractGame {
 			}
 		}
 	}
+	
+	public void addObject(GameObject object)
+	{
+		objects.add(object);
+	}
+	
+	public GameObject getObject(String tag)
+	{
+		for(int i = 0; i < objects.size(); i++)
+		{
+			if(objects.get(i).getTag().equals(tag))
+			{
+				return objects.get(i);
+			}
+		}
+		return null;
+	}
 
 	public boolean getCollision(int x, int y) {
 		if (x < 0 || x >= levelW || y < 0 || y >= levelH) {
 			return true;
 		}
-		return collision[x + y * levelW];
+		return collision [(x + y * levelW)];
 	}
 
 	public static void main(String args[]) {

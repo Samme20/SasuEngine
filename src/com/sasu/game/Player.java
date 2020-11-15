@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 
 import com.sasu.engine.GameContainer;
 import com.sasu.engine.Renderer;
+import com.sasu.engine.audio.SoundClip;
 import com.sasu.engine.gfx.ImageTile;
 
 public class Player extends GameObject
@@ -28,6 +29,8 @@ public class Player extends GameObject
 	private ImageTile mario;
 	float temp = 0;
 	
+	private SoundClip clip;
+	
 	private float fallDistance = 0;
 	
 	public Player(int posX, int posY)
@@ -42,6 +45,8 @@ public class Player extends GameObject
 		this.width = 16;
 		this.height = 16;
 		mario = new ImageTile("/mario_idle_right.png", 16, 16);
+		clip = new SoundClip("/Audio/test.wav");
+		clip.setVolume(-2f);
 	}
 
 	
@@ -204,7 +209,7 @@ public class Player extends GameObject
 			tileY++;
 			offY -= GameManager.tileSize;
 		}
-		
+	
 		if(offY < -GameManager.tileSize / 2)
 		{
 			tileY--;
@@ -226,6 +231,12 @@ public class Player extends GameObject
 		
 		posY = tileY * GameManager.tileSize + offY;
 		posX = tileX * GameManager.tileSize + offX;
+		
+		if(gc.getInput().isKey(KeyEvent.VK_UP))
+		{
+			gm.addObject(new Projectile(tileX, tileY, offX + width / 2, offY + height / 2, 3));
+			clip.play();
+		}
 		
 	}
 

@@ -27,10 +27,10 @@ public class Renderer
 	private int ambientColor = 0xffffff;
 	private int zDepth = 0;
 	private boolean processing = false;
+	private int camX, camY;
 	
 	private int clearColor = 0;
 	
-
 	
 	
 	public Renderer(GameContainer gc)
@@ -144,7 +144,7 @@ public class Renderer
 	}
 	
 	public void setLightMap(int x, int y, int value)
-	{
+	{		
 		if(x < 0 || x >= pW || y < 0 || y >= pH)
 		{
 			return;
@@ -161,6 +161,9 @@ public class Renderer
 	
 	public void setLightBlock(int x, int y, int value)
 	{
+		x -= camX;
+		y -= camY;
+		
 		if(x < 0 || x >= pW || y < 0 || y >= pH)
 		{
 			return;
@@ -176,6 +179,8 @@ public class Renderer
 	 
 	public void drawText(String text, int offX, int offY, int color)
 	{
+		offX -= camX;
+		offY -= camY;
 		int offset = 0;
 		
 		for(int i = 0; i < text.length(); i++)
@@ -200,7 +205,9 @@ public class Renderer
 	
 	
 	public void drawImage(Image image, int offX, int offY)
-	{		
+	{	
+		offX -= camX;
+		offY -= camY;
 		
 		if(image.isAlpha() && !processing)
 		{
@@ -258,6 +265,8 @@ public class Renderer
 	
 	public void drawImageTile(ImageTile image, int offX, int offY, int tileX, int tileY)
 	{
+		offX -= camX;
+		offY -= camY;
 		
 		if(image.isAlpha() && !processing)
 		{
@@ -318,36 +327,18 @@ public class Renderer
 	
 	public void drawFillRect(int offX, int offY, int width, int height, int color)
 	{
-		
+		offX -= camX;
+		offY -= camY;
+
 		//Don't render if off screen
 		if(offX < -width) return;		
 		if(offY < -height) return;
 		if(offX >= pW) return;		
 		if(offY >= pH) return;
-		
-			
-		int newX = 0;
-		int newY = 0;
-		int newWidth = width;
-		int newHeight = height;
-		
-		
-		//Clipping code
-		//Opposite  width !render
-		if(offX < 0){newX -= offX;}	
-		
-		//Opposite height !render
-		if(offY < 0){newY -= offY;}
-	
-		//Clips the image width
-		if(newWidth + offX >= pW){newWidth -= newWidth + offX - pW;}
-		
-		//clips the image height
-		if(newHeight + offY >= pH){newHeight -= newHeight + offY - pH;}
-		
-		for(int y = newY; y < newHeight; y++)
+
+		for(int y = 0; y < height; y++)
 		{
-			for(int x = newX; x < newWidth; x++)
+			for(int x = 0; x < width; x++)
 			{
 				setPixel(x + offX, y + offY, color);
 			}
@@ -442,6 +433,22 @@ public class Renderer
 
 	public void setAmbientColor(int ambientColor) {
 		this.ambientColor = ambientColor;
+	}
+
+	public int getCamX() {
+		return camX;
+	}
+
+	public void setCamX(int camX) {
+		this.camX = camX;
+	}
+
+	public int getCamY() {
+		return camY;
+	}
+
+	public void setCamY(int camY) {
+		this.camY = camY;
 	}
 	
 	

@@ -72,7 +72,7 @@ public class GameContainer implements Runnable
 				
 				
 				game.update(this, (float)UPDATE_CAP);
-										
+									
 				
 				input.update();
 				
@@ -88,6 +88,8 @@ public class GameContainer implements Runnable
 				renderer.clear();
 				game.renderer(this, renderer);
 				renderer.process();
+				renderer.setCamX(0);
+				renderer.setCamY(0);
 				renderer.drawText("FPS:" + fps, 2, 2, 0xff00ffff);
 				window.update();
 				frames++;
