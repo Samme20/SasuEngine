@@ -65,7 +65,7 @@ public class Player extends GameObject
 		if(gc.getInput().isKey(KeyEvent.VK_A))
 		{
 			still = false;
-			if(!left)
+			if(!left && !air) // maybe this sucks idk. Results in backwards jump mechanic
 			{
 				temp = 0;
 				mario = new ImageTile("/mario_walk_left.png", 16, 16);
@@ -106,7 +106,7 @@ public class Player extends GameObject
 		if(gc.getInput().isKey(KeyEvent.VK_D))
 		{
 			still = false;
-			if(!right)
+			if(!right && !air)
 			{
 				temp = 0;
 				mario = new ImageTile("/mario_walk_right.png", 16, 16);
@@ -167,17 +167,8 @@ public class Player extends GameObject
 			}
 			
 		}
-
-
-					
-		// End of Left and Right
 		
-		
-		// Beginning of Jump and gravity
-		
-		fallDistance += (dt / 2) *fallSpeed; //I changed this to fall slower, my frame time is too fast LUL
-		
-		if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE) && groundHit)
+		if(!groundHit)
 		{
 			if(right2 && !air)
 			{
@@ -191,6 +182,19 @@ public class Player extends GameObject
 				mario = new ImageTile("/mario_jump_left.png", 16, 20); // TODO: fix this son of a bitch not working when only pressing space
 				air = true;
 			}
+		}
+
+
+					
+		// End of Left and Right
+		
+		
+		// Beginning of Jump and gravity
+		
+		fallDistance += (dt / 2) *fallSpeed; //I changed this to fall slower, my frame time is too fast LUL
+		
+		if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE) && groundHit)
+		{
 			fallDistance = jump;
 			groundHit = false;
 
