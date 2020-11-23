@@ -26,6 +26,8 @@ public class Player extends GameObject
 	private boolean right2;
 	private boolean left2;
 	
+	private boolean air;
+	
 	private ImageTile mario;
 	float temp = 0;
 	
@@ -65,6 +67,7 @@ public class Player extends GameObject
 			still = false;
 			if(!left)
 			{
+				temp = 0;
 				mario = new ImageTile("/mario_walk_left.png", 16, 16);
 				right = false;
 				left = true;
@@ -105,6 +108,7 @@ public class Player extends GameObject
 			still = false;
 			if(!right)
 			{
+				temp = 0;
 				mario = new ImageTile("/mario_walk_right.png", 16, 16);
 				left = false;
 				right = true;
@@ -138,22 +142,24 @@ public class Player extends GameObject
 		}
 		
 		
-		if(!gc.getInput().isKey(KeyEvent.VK_D) && !gc.getInput().isKey(KeyEvent.VK_A))
+		if(!gc.getInput().isKey(KeyEvent.VK_SPACE))
 		{
 			//NOTHING
 		}
 		
 		//Checks is no input is present and sets still to true	
-		if(!right && !left)
+		if(!right && !left && groundHit)
 		{
 			if(!still)
 			{
 				if(right2)
 				{
+					temp = 0;
 					mario = new ImageTile("/mario_idle_right.png", 16, 16);
 				}
 				if(left2)
 				{
+					temp = 0;
 					mario = new ImageTile("/mario_idle_left.png", 16, 16);
 				}
 				still = true;
@@ -161,9 +167,9 @@ public class Player extends GameObject
 			}
 			
 		}
-		
-		
-		
+
+
+					
 		// End of Left and Right
 		
 		
@@ -173,8 +179,21 @@ public class Player extends GameObject
 		
 		if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE) && groundHit)
 		{
+			if(right2 && !air)
+			{
+				temp = 0;
+				mario = new ImageTile("/mario_jump_right.png", 16, 20);
+				air = true;
+			}
+			if(left2 && !air)
+			{
+				temp = 0;
+				mario = new ImageTile("/mario_jump_left.png", 16, 20); // TODO: fix this son of a bitch not working when only pressing space
+				air = true;
+			}
 			fallDistance = jump;
 			groundHit = false;
+
 		}
 		
 		offY += fallDistance;
@@ -189,13 +208,16 @@ public class Player extends GameObject
 		}
 		
 		
+		
 		if(fallDistance > 0)
 		{
 			if((gm.getCollision(tileX, tileY + 1) || gm.getCollision(tileX + (int)Math.signum((int)offX), tileY + 1)) && offY > 0)
 			{
+				
 				fallDistance = 0;
 				offY = 0;
 				groundHit = true;
+				air = false;
 			}
 		}
 		
@@ -232,9 +254,9 @@ public class Player extends GameObject
 		posY = tileY * GameManager.tileSize + offY;
 		posX = tileX * GameManager.tileSize + offX;
 		
-		if(gc.getInput().isKey(KeyEvent.VK_UP))
+		if(gc.getInput().isKeyDown(KeyEvent.VK_UP))
 		{
-			gm.addObject(new Projectile(tileX, tileY, offX + width / 2, offY + height / 2, 3));
+			gm.addObject(new Projectile(tileX, tileY, offX + width / 2, offY + height / 2, 4));
 			clip.play();
 		}
 		
